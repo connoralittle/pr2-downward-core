@@ -13,6 +13,8 @@
 #include "utils/system.h"
 #include "utils/timer.h"
 
+#include "pr2/pr2.h"
+
 #include <cassert>
 #include <iostream>
 #include <limits>
@@ -157,9 +159,12 @@ void SearchAlgorithm::search() {
     log << "Actual search time: " << timer.get_elapsed_time() << endl;
 }
 
+// PR2: Modified to allow for specific task
 bool SearchAlgorithm::check_goal_and_set_plan(const State &state) {
-    if (task_properties::is_goal_state(task_proxy, state)) {
-        log << "Solution found!" << endl;
+
+    if (PR2.pr2_goal_check(task_proxy, state)) {
+        if (PR2.logging.verbose)
+            cout << "Solution found!" << endl;
         Plan plan;
         search_space.trace_path(state, plan);
         set_plan(plan);
