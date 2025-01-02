@@ -25,20 +25,26 @@ using utils::ExitCode;
 
 static successor_generator::SuccessorGenerator &get_successor_generator(
     const TaskProxy &task_proxy, utils::LogProxy &log) {
-    log << "Building successor generator..." << flush;
-    int peak_memory_before = utils::get_peak_memory_in_kb();
-    utils::Timer successor_generator_timer;
-    successor_generator::SuccessorGenerator &successor_generator =
-        successor_generator::g_successor_generators[task_proxy];
-    successor_generator_timer.stop();
-    log << "done!" << endl;
-    int peak_memory_after = utils::get_peak_memory_in_kb();
-    int memory_diff = peak_memory_after - peak_memory_before;
-    log << "peak memory difference for successor generator creation: "
-        << memory_diff << " KB" << endl
-        << "time for successor generation creation: "
-        << successor_generator_timer << endl;
-    return successor_generator;
+        if (!PR2.general.successor_generator_defined) {
+            log << "Building successor generator..." << flush;
+            int peak_memory_before = utils::get_peak_memory_in_kb();
+            utils::Timer successor_generator_timer;
+            successor_generator::SuccessorGenerator &successor_generator =
+                successor_generator::g_successor_generators[task_proxy];
+            successor_generator_timer.stop();
+            log << "done!" << endl;
+            int peak_memory_after = utils::get_peak_memory_in_kb();
+            int memory_diff = peak_memory_after - peak_memory_before;
+            log << "peak memory difference for successor generator creation: "
+                << memory_diff << " KB" << endl
+                << "time for successor generation creation: "
+                << successor_generator_timer << endl;
+            PR2.general.successor_generator_defined = true;
+            PR2.general.successor_generator = &successor_generator;
+            return successor_generator;
+        } else {
+            return *PR2.general.successor_generator;
+        }
 }
 
 SearchAlgorithm::SearchAlgorithm(

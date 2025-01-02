@@ -53,7 +53,10 @@ protected:
     bool is_unit_cost;
     double max_time;
 
-    virtual void initialize() {}
+    virtual void initialize()  {
+        status = IN_PROGRESS;
+        solution_found = false;
+    }
     virtual SearchStatus step() = 0;
 
     void set_plan(const Plan &plan);
