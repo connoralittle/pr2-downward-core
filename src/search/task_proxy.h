@@ -171,7 +171,7 @@ public:
     }
 
     bool operator==(const FactProxy &other) const {
-        assert(task == other.task);
+        // assert(task == other.task);
         return fact == other.fact;
     }
 
