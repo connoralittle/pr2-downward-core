@@ -67,6 +67,15 @@ RelaxationHeuristic::RelaxationHeuristic(
     for (VariableProxy var : variables) {
         proposition_offsets.push_back(offset);
         offset += var.get_domain_size();
+
+
+        // PR2: Hold on to the names of each of the facts
+        for (int val = 0; val < var.get_domain_size(); ++val) {
+            propnames.push_back(var.get_fact(val).get_name());
+        }
+
+
+
     }
     assert(offset == static_cast<int>(propositions.size()));
 

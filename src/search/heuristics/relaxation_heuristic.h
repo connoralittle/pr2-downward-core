@@ -64,6 +64,7 @@ class RelaxationHeuristic : public Heuristic {
 protected:
     std::vector<UnaryOperator> unary_operators;
     std::vector<Proposition> propositions;
+    std::vector<std::string> propnames;
     std::vector<PropID> goal_propositions;
 
     array_pool::ArrayPool preconditions_pool;
