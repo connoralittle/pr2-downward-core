@@ -162,7 +162,8 @@ void SearchAlgorithm::search() {
         }
     }
     // TODO: Revise when and which search times are logged.
-    log << "Actual search time: " << timer.get_elapsed_time() << endl;
+    if (PR2.logging.verbose)
+        log << "Actual search time: " << timer.get_elapsed_time() << endl;
 }
 
 // PR2: Modified to allow for specific task

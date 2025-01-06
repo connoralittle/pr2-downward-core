@@ -108,11 +108,13 @@ void print_variable_statistics(const TaskProxy &task_proxy) {
     for (VariableProxy var : variables)
         num_facts += var.get_domain_size();
 
-    utils::g_log << "Variables: " << variables.size() << endl;
-    utils::g_log << "FactPairs: " << num_facts << endl;
-    utils::g_log << "Bytes per state: "
-                 << state_packer.get_num_bins() * sizeof(int_packer::IntPacker::Bin)
-                 << endl;
+    if (PR2.logging.verbose) {
+        utils::g_log << "Variables: " << variables.size() << endl;
+        utils::g_log << "FactPairs: " << num_facts << endl;
+        utils::g_log << "Bytes per state: "
+                    << state_packer.get_num_bins() * sizeof(int_packer::IntPacker::Bin)
+                    << endl;
+    }
 }
 
 void dump_pddl(const State &state) {

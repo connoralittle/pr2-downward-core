@@ -4,6 +4,21 @@
 #include "utils/logging.h"
 #include "utils/system.h"
 
+
+
+
+
+
+
+
+// PR2: Override the logging
+#include "pr2/pr2.h"
+
+
+
+
+
+
 #include <cassert>
 
 using namespace std;
@@ -26,14 +41,16 @@ bool Evaluator::dead_ends_are_reliable() const {
 
 void Evaluator::report_value_for_initial_state(
     const EvaluationResult &result) const {
-    if (log.is_at_least_normal()) {
-        assert(use_for_reporting_minima);
-        log << "Initial heuristic value for " << description << ": ";
-        if (result.is_infinite())
-            log << "infinity";
-        else
-            log << result.get_evaluator_value();
-        log << endl;
+    if (PR2.logging.verbose) {
+        if (log.is_at_least_normal()) {
+            assert(use_for_reporting_minima);
+            log << "Initial heuristic value for " << description << ": ";
+            if (result.is_infinite())
+                log << "infinity";
+            else
+                log << result.get_evaluator_value();
+            log << endl;
+        }
     }
 }
 

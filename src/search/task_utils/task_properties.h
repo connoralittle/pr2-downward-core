@@ -6,6 +6,16 @@
 
 #include "../algorithms/int_packer.h"
 
+
+
+
+
+// PR2: Override the logging
+#include "../pr2/pr2.h"
+
+
+
+
 namespace task_properties {
 inline bool is_applicable(OperatorProxy op, const State &state) {
     for (FactProxy precondition : op.get_preconditions()) {
