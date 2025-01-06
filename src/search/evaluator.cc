@@ -56,10 +56,12 @@ void Evaluator::report_value_for_initial_state(
 
 void Evaluator::report_new_minimum_value(
     const EvaluationResult &result) const {
-    if (log.is_at_least_normal()) {
-        assert(use_for_reporting_minima);
-        log << "New best heuristic value for " << description << ": "
-            << result.get_evaluator_value() << endl;
+    if (PR2.logging.verbose) {
+        if (log.is_at_least_normal()) {
+            assert(use_for_reporting_minima);
+            log << "New best heuristic value for " << description << ": "
+                << result.get_evaluator_value() << endl;
+        }
     }
 }
 

@@ -9,6 +9,17 @@
 using namespace std;
 
 
+
+
+
+
+// PR2: Override the logging
+#include "pr2/pr2.h"
+
+
+
+
+
 SearchStatistics::SearchStatistics(utils::LogProxy &log)
     : log(log) {
     expanded_states = 0;
@@ -39,19 +50,23 @@ void SearchStatistics::report_f_value_progress(int f) {
 }
 
 void SearchStatistics::print_f_line() const {
-    if (log.is_at_least_normal()) {
-        log << "f = " << lastjump_f_value
-            << ", ";
-        print_basic_statistics();
-        log << endl;
+    if (PR2.logging.verbose) {
+        if (log.is_at_least_normal()) {
+            log << "f = " << lastjump_f_value
+                << ", ";
+            print_basic_statistics();
+            log << endl;
+        }
     }
 }
 
 void SearchStatistics::print_checkpoint_line(int g) const {
-    if (log.is_at_least_normal()) {
-        log << "g=" << g << ", ";
-        print_basic_statistics();
-        log << endl;
+    if (PR2.logging.verbose) {
+        if (log.is_at_least_normal()) {
+            log << "g=" << g << ", ";
+            print_basic_statistics();
+            log << endl;
+        }
     }
 }
 
