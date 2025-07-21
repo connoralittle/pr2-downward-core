@@ -31,12 +31,10 @@ static bool compare_sccs_decreasing(const vector<int> &lhs, const vector<int> &r
 
 MergeStrategyFactorySCCs::MergeStrategyFactorySCCs(
     const OrderOfSCCs &order_of_sccs,
-    const shared_ptr<MergeTreeFactory> &merge_tree,
     const shared_ptr<MergeSelector> &merge_selector,
     utils::Verbosity verbosity)
     : MergeStrategyFactory(verbosity),
       order_of_sccs(order_of_sccs),
-      merge_tree_factory(merge_tree),
       merge_selector(merge_selector) {
 }
 
@@ -97,28 +95,18 @@ unique_ptr<MergeStrategy> MergeStrategyFactorySCCs::compute_merge_strategy(
         merge_selector->initialize(task_proxy);
     }
 
-    return utils::make_unique_ptr<MergeStrategySCCs>(
+    return make_unique<MergeStrategySCCs>(
         fts,
-        task_proxy,
-        merge_tree_factory,
         merge_selector,
         move(non_singleton_cg_sccs));
 }
 
 bool MergeStrategyFactorySCCs::requires_init_distances() const {
-    if (merge_tree_factory) {
-        return merge_tree_factory->requires_init_distances();
-    } else {
-        return merge_selector->requires_init_distances();
-    }
+    return merge_selector->requires_init_distances();
 }
 
 bool MergeStrategyFactorySCCs::requires_goal_distances() const {
-    if (merge_tree_factory) {
-        return merge_tree_factory->requires_goal_distances();
-    } else {
-        return merge_selector->requires_goal_distances();
-    }
+    return merge_selector->requires_goal_distances();
 }
 
 void MergeStrategyFactorySCCs::dump_strategy_specific_options() const {
@@ -141,12 +129,7 @@ void MergeStrategyFactorySCCs::dump_strategy_specific_options() const {
         log << endl;
 
         log << "Merge strategy for merging within sccs: " << endl;
-        if (merge_tree_factory) {
-            merge_tree_factory->dump_options(log);
-        }
-        if (merge_selector) {
-            merge_selector->dump_options(log);
-        }
+        merge_selector->dump_options(log);
     }
 }
 
@@ -158,7 +141,7 @@ class MergeStrategyFactorySCCsFeature
     : public plugins::TypedFeature<MergeStrategyFactory, MergeStrategyFactorySCCs> {
 public:
     MergeStrategyFactorySCCsFeature() : TypedFeature("merge_sccs") {
-        document_title("Merge strategy SSCs");
+        document_title("Merge strategy SCCs");
         document_synopsis(
             "This merge strategy implements the algorithm described in the paper "
             + utils::format_conference_reference(
@@ -170,7 +153,8 @@ public:
                 "2358-2366",
                 "AAAI Press",
                 "2016") +
-            "In a nutshell, it computes the maximal SCCs of the causal graph, "
+            "In a nutshell, it computes the maximal strongly connected "
+            "components (SCCs) of the causal graph, "
             "obtaining a partitioning of the task's variables. Every such "
             "partition is then merged individually, using the specified fallback "
             "merge strategy, considering the SCCs in a configurable order. "
@@ -182,35 +166,17 @@ public:
             "order_of_sccs",
             "how the SCCs should be ordered",
             "topological");
-        add_option<shared_ptr<MergeTreeFactory>>(
-            "merge_tree",
-            "the fallback merge strategy to use if a precomputed strategy should "
-            "be used.",
-            plugins::ArgumentInfo::NO_DEFAULT);
         add_option<shared_ptr<MergeSelector>>(
             "merge_selector",
-            "the fallback merge strategy to use if a stateless strategy should "
-            "be used.",
-            plugins::ArgumentInfo::NO_DEFAULT);
+            "the fallback merge strategy to use");
         add_merge_strategy_options_to_feature(*this);
     }
 
-    virtual shared_ptr<MergeStrategyFactorySCCs> create_component(
-        const plugins::Options &opts,
-        const utils::Context &context) const override {
-        bool merge_tree = opts.contains("merge_tree");
-        bool merge_selector = opts.contains("merge_selector");
-        if ((merge_tree && merge_selector) || (!merge_tree && !merge_selector)) {
-            context.error(
-                "You have to specify exactly one of the options merge_tree "
-                "and merge_selector!");
-        }
+    virtual shared_ptr<MergeStrategyFactorySCCs>
+    create_component(const plugins::Options &opts) const override {
         return plugins::make_shared_from_arg_tuples<MergeStrategyFactorySCCs>(
             opts.get<OrderOfSCCs>("order_of_sccs"),
-            opts.get<shared_ptr<MergeTreeFactory>> (
-                "merge_tree", nullptr),
-            opts.get<shared_ptr<MergeSelector>> (
-                "merge_selector", nullptr),
+            opts.get<shared_ptr<MergeSelector>> ("merge_selector"),
             get_merge_strategy_arguments_from_options(opts)
             );
     }

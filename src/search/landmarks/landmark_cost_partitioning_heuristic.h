@@ -16,17 +16,16 @@ class LandmarkCostPartitioningHeuristic : public LandmarkHeuristic {
     std::unique_ptr<CostPartitioningAlgorithm> cost_partitioning_algorithm;
 
     void check_unsupported_features(
-        const std::shared_ptr<LandmarkFactory> &lm_factory);
+        const std::shared_ptr<LandmarkFactory> &landmark_factory);
     void set_cost_partitioning_algorithm(
         CostPartitioningMethod cost_partitioning,
-        lp::LPSolverType lpsolver, bool alm);
+        lp::LPSolverType lpsolver, bool use_action_landmarks);
 
     int get_heuristic_value(const State &ancestor_state) override;
 public:
     LandmarkCostPartitioningHeuristic(
         const std::shared_ptr<LandmarkFactory> &lm_factory, bool pref,
         bool prog_goal, bool prog_gn, bool prog_r,
-        tasks::AxiomHandlingType axioms,
         const std::shared_ptr<AbstractTask> &transform,
         bool cache_estimates, const std::string &description,
         utils::Verbosity verbosity,
