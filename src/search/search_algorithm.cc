@@ -14,6 +14,8 @@
 #include "utils/timer.h"
 
 #include "pr2/pr2.h"
+#include "pr2/policy.h"
+#include "pr2/deadend.h"
 
 #include <cassert>
 #include <iostream>
